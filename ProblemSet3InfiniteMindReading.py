@@ -61,45 +61,35 @@
 # y" with |x+y| > 0 ) that _is_ recursive. Watch out for infinite loops:
 # keep track of what you have already visited.
 
-def cfgempty(grammar, symbol, visited):
-    if not symbol in visited:
-        nonTerminal = False
-        for x in grammar:
-            if x[0] == symbol:
-                nonTerminal = True
-                visited.append(symbol)
-                interrupted = False
-                converts = x[1]
-                nextConverts = []
-                for i in range(len(converts)):
-                    y = converts[i]
-                    c = cfgempty(grammar, y, visited)
-                    if c is None:
-                        interrupted = True
-                        break
-                    else:
-                        nextConverts += c
-                visited.pop()
-
-                if not interrupted:
-                    return nextConverts
-        if not nonTerminal:
-            return [symbol]
-
-    return None
-
-def infinite(rule, grammar):
+def compute(rule, grammar, visited):
+    symbol = rule[0]
+    if symbol in visited:
+        return 1
+    else:
+        visited.append(symbol)
+        right = rule[1]
+        points = []
+        symbols = [x[0] for x in grammar]
+        for part in right:
+            if part in symbols:
+                rules = [x for x in grammar if x[0] == part]
+                for rule in rules:
+                    points.append(compute(rule, grammar, visited))
+            else:
+                points.append(2)
+        visited.pop()
+        if 3 in points:
+            return 3
+        elif 1 in points and 2 in points:
+            return 3
+        else:
+            return 0
     
 
 def cfginfinite(grammar):
-    visited = []
     for x in grammar:
-        if x in visited:
-            continue
-        if infinite(x, grammar):
+        if compute(x, grammar, []) == 3:
             return True
-        else:
-            visited.append(x)
     return False
 
     # We have provided a few test cases. You will likely want to write your own
