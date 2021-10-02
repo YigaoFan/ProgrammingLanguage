@@ -34,8 +34,8 @@ def reductions(chart, i, x, ab, cd, j):
     return []
 
 def log(*messages, end='\n'):
-    pass
-    # print(*messages, end=end)
+    # pass
+    print(*messages, end=end)
 
 def parse(tokens, grammar):
     tokens = tokens + ['end_of_input_marker']
@@ -82,11 +82,13 @@ def parse(tokens, grammar):
     acceptingState = (startRule[0], startRule[1], [], 0)
     return acceptingState in chart[len(tokens)-1]
 
-tokens = ['(', '(', ')', ')']
+tokens = ['id', '(', 'exp', 'exp', ')']
 grammar = [
-    ('S', ['P']),
-    ('P', ['(', 'P', ')']),
-    ('P', []),
+    ('S', ['id', '(', 'OPTARGS', ')']),
+    ('OPTARGS', []),
+    ('OPTARGS', ['ARGS']),
+    ('ARGS', ['exp', 'ARGS']),
+    ('ARGS', ['exp']),
 ]
 result = parse(tokens, grammar)
 print(result)
